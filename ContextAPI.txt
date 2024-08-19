@@ -1,0 +1,166 @@
+Technical Presentation: React Context API
+1. Introduction to React Context API
+Theory:
+
+What is React Context API?
+The React Context API is a way to manage state globally across your application without having to pass props manually through every level of the component tree.
+Why Use Context?
+Simplifies state management in React apps.
+Avoids prop drilling (passing data through multiple levels of components).
+Useful for global data such as user authentication status, theme settings, etc.
+2. Core Concepts
+Theory:
+
+Context Creation
+Create a context using React.createContext().
+Provider Component
+Wrap your components with a Provider to pass the context data.
+Consumer Component
+Access context data using useContext hook or <Context.Consumer>.
+3. Setting Up a React Context
+Code Example:
+
+Create Context:
+
+jsx
+Copy code
+// src/contexts/ThemeContext.js
+import React from 'react';
+
+const ThemeContext = React.createContext();
+
+export default ThemeContext;
+Create a Provider Component:
+
+jsx
+Copy code
+// src/contexts/ThemeProvider.js
+import React, { useState } from 'react';
+import ThemeContext from './ThemeContext';
+
+const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('light');
+
+  const toggleTheme = () => {
+    setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
+  };
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
+
+export default ThemeProvider;
+Use Context in Components:
+
+jsx
+Copy code
+// src/components/ThemeSwitcher.js
+import React, { useContext } from 'react';
+import ThemeContext from '../contexts/ThemeContext';
+
+const ThemeSwitcher = () => {
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  return (
+    <div>
+      <p>Current Theme: {theme}</p>
+      <button onClick={toggleTheme}>Toggle Theme</button>
+    </div>
+  );
+};
+
+export default ThemeSwitcher;
+Integrate Provider in App:
+
+jsx
+Copy code
+// src/App.js
+import React from 'react';
+import ThemeProvider from './contexts/ThemeProvider';
+import ThemeSwitcher from './components/ThemeSwitcher';
+
+const App = () => {
+  return (
+    <ThemeProvider>
+      <div className="App">
+        <ThemeSwitcher />
+      </div>
+    </ThemeProvider>
+  );
+};
+
+export default App;
+4. Advanced Usage
+Theory:
+
+Context with Multiple Values:
+Combining multiple contexts for different pieces of global state.
+Context Performance Optimization:
+Avoid unnecessary re-renders with React.memo and useMemo.
+Code Example:
+
+jsx
+Copy code
+// src/contexts/UserContext.js
+import React, { createContext, useState, useContext } from 'react';
+
+const UserContext = createContext();
+
+const UserProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
+};
+
+const useUser = () => useContext(UserContext);
+
+export { UserProvider, useUser };
+jsx
+Copy code
+// src/components/UserProfile.js
+import React from 'react';
+import { useUser } from '../contexts/UserContext';
+
+const UserProfile = () => {
+  const { user } = useUser();
+
+  return (
+    <div>
+      {user ? (
+        <p>Welcome, {user.name}!</p>
+      ) : (
+        <p>Please log in.</p>
+      )}
+    </div>
+  );
+};
+
+export default UserProfile;
+5. Benefits and Drawbacks
+Theory:
+
+Benefits:
+
+Centralized state management.
+Reduces prop drilling.
+Simplifies state sharing across components.
+Drawbacks:
+
+Can lead to performance issues if not managed properly.
+May become complex with multiple contexts.
+6. Conclusion
+Summary:
+
+The React Context API provides a powerful way to manage state globally in a React application.
+It’s ideal for applications where passing props down multiple levels becomes cumbersome.
+Proper usage and performance considerations are key to leveraging its benefits.
+Q&A:
+
+Open the floor for questions and clarifications.
